@@ -1,0 +1,14 @@
+{
+  "name": "@podmanager/server",
+  "version": "1.0.0",
+  "description": "Podmanager backend server and API",
+  "main": "src/index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node test/api.test.js && node test/lifecycle.test.js"
+  },
+  "dependencies": {
+    "express": "^5.3.0"
+  }
+}

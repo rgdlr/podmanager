@@ -1,0 +1,24 @@
+{
+  "name": "podmanager",
+  "version": "1.0.0",
+  "description": "The lightweight, native, and modern Web GUI for Podman environments",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "start": "npm run start --workspace=@podmanager/server",
+    "test": "npm run test --workspace=@podmanager/server"
+  },
+  "keywords": [
+    "podmanager",
+    "podman",
+    "web-ui",
+    "containers",
+    "pods",
+    "management",
+    "monorepo"
+  ],
+  "author": "",
+  "license": "MIT"
+}

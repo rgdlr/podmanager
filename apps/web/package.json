@@ -1,0 +1,6 @@
+{
+  "name": "@podmanager/web",
+  "version": "1.0.0",
+  "description": "Podmanager Web UI Single Page Application",
+  "license": "MIT"
+}
