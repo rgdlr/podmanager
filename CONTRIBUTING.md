@@ -5,7 +5,7 @@ Thank you for your interest in contributing to **Podmanager**! We welcome contri
 ## 🛠️ Development Environment
 
 ### Prerequisites
-- **Node.js**: v18.0.0 or higher
+- **Node.js**: v24.0.0 or higher
 - **Podman**: v4.0.0 or higher (rootless or rootful)
 - **Git**
 
@@ -13,7 +13,7 @@ Thank you for your interest in contributing to **Podmanager**! We welcome contri
 
 1. **Fork and clone the repository:**
    ```bash
-   git clone https://github.com/your-username/podmanager.git
+   git clone https://github.com/rgdlr/podmanager.git
    cd podmanager
    ```
 
