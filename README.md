@@ -23,6 +23,27 @@ Unlike traditional container dashboards designed around Docker daemons, **Podman
 - Operates directly via the Podman CLI without requiring complex systemd user sockets or persistent background daemons.
 - Delivers a lightning-fast single-page interface with **zero frontend build overhead** and a footprint under **30 MB RAM**.
 
+## ⚡ Why Podmanager?
+
+| Feature                           | Podmanager                         | Portainer                       | Cockpit-Podman            |
+| :-------------------------------- | :--------------------------------- | :------------------------------ | :------------------------ |
+| **Native Rootless Podman**        | ✅ Native                           | ⚠️ Complex socket setup          | ✅ Native                  |
+| **Native Pods Support**           | ✅ First-class                      | ❌ Docker focused                | ⚠️ Basic                   |
+| **Zero Socket / Daemon Required** | ✅ Direct CLI execution             | ❌ Requires Docker/Podman socket | ❌ Requires cockpit-bridge |
+| **Resource Footprint**            | ⚡ **< 30 MB RAM**                  | 🐢 ~150–250 MB                   | 🐢 System service overhead |
+| **Real-Time SSE Streaming**       | ✅ Logs, Events & Pulls             | ⚠️ Polling / WebSocket           | ⚠️ Polling                 |
+| **In-Browser Container Exec**     | ✅ Instant CLI runner               | ✅ Available                     | ✅ Available               |
+| **Build & Setup Overhead**        | 🚀 **Zero build step (Vanilla JS)** | 📦 Heavy React bundle            | 📦 OS package dependency   |
+
+## ✨ Key Features
+
+- **📊 Dashboard & Resource Analytics**: Real-time Podman engine health, CPU/memory stats, storage usage breakdown (`system df`), and one-click resource pruning.
+- **📦 Container Lifecycle & Web Terminal**: Start, stop, restart, pause, remove, inspect OCI configs, stream live logs via SSE, and run interactive commands with in-browser `exec`.
+- **☸️ First-Class Podman Pods**: Full support for multi-container pods, shared networking, port publications, and batch lifecycle management.
+- **🖼️ Image Hub & Live Pull Streaming**: Browse local images, deploy containers in one click, and pull new images with real-time download progress logs.
+- **💾 Volumes & Container Networks**: Inspect and manage persistent named volumes and container bridge networks.
+- **📡 Real-Time Daemon Event Stream**: Continuous Server-Sent Events (SSE) feed reflecting all daemon events live as they occur.
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -63,27 +84,6 @@ Example:
 ```bash
 PORT=8080 HOST=127.0.0.1 npm start
 ```
-
-## ⚡ Why Podmanager?
-
-| Feature                           | Podmanager                         | Portainer                       | Cockpit-Podman            |
-| :-------------------------------- | :--------------------------------- | :------------------------------ | :------------------------ |
-| **Native Rootless Podman**        | ✅ Native                           | ⚠️ Complex socket setup          | ✅ Native                  |
-| **Native Pods Support**           | ✅ First-class                      | ❌ Docker focused                | ⚠️ Basic                   |
-| **Zero Socket / Daemon Required** | ✅ Direct CLI execution             | ❌ Requires Docker/Podman socket | ❌ Requires cockpit-bridge |
-| **Resource Footprint**            | ⚡ **< 30 MB RAM**                  | 🐢 ~150–250 MB                   | 🐢 System service overhead |
-| **Real-Time SSE Streaming**       | ✅ Logs, Events & Pulls             | ⚠️ Polling / WebSocket           | ⚠️ Polling                 |
-| **In-Browser Container Exec**     | ✅ Instant CLI runner               | ✅ Available                     | ✅ Available               |
-| **Build & Setup Overhead**        | 🚀 **Zero build step (Vanilla JS)** | 📦 Heavy React bundle            | 📦 OS package dependency   |
-
-## ✨ Key Features
-
-- **📊 Dashboard & Resource Analytics**: Real-time Podman engine health, CPU/memory stats, storage usage breakdown (`system df`), and one-click resource pruning.
-- **📦 Container Lifecycle & Web Terminal**: Start, stop, restart, pause, remove, inspect OCI configs, stream live logs via SSE, and run interactive commands with in-browser `exec`.
-- **☸️ First-Class Podman Pods**: Full support for multi-container pods, shared networking, port publications, and batch lifecycle management.
-- **🖼️ Image Hub & Live Pull Streaming**: Browse local images, deploy containers in one click, and pull new images with real-time download progress logs.
-- **💾 Volumes & Container Networks**: Inspect and manage persistent named volumes and container bridge networks.
-- **📡 Real-Time Daemon Event Stream**: Continuous Server-Sent Events (SSE) feed reflecting all daemon events live as they occur.
 
 ## 📚 Documentation
 
