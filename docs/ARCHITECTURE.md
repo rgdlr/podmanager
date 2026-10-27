@@ -38,6 +38,13 @@ podmanager/
 │   │           ├── api.js               # Frontend REST API client & SSE consumer
 │   │           └── app.js               # Reactive UI controller, routing & DOM handlers
 │   │
+│   ├── landing/                         # [@podmanager/landing] Product Landing Page
+│   │   ├── package.json
+│   │   └── public/                      # Static landing assets (Apple-inspired design)
+│   │       ├── index.html               # Product landing page
+│   │       ├── podmanager.webp          # Logo asset
+│   │       └── dashboard.webp           # Hero showcase screenshot
+│   │
 │   └── server/                          # [@podmanager/server] Backend Engine & API
 │       ├── package.json
 │       ├── src/

@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Podmanager — Native, Lightweight Web GUI for Podman</title>
+  <meta name="description" content="A fast, lightweight, and modern Web GUI for Podman containers, pods, images, volumes, and networks. Rootless, daemon-free, and under 30 MB RAM.">
+  <link rel="icon" type="image/webp" href="podmanager.webp">
+  
+  <!-- Apple Touch & OpenGraph -->
+  <meta name="theme-color" content="#000000">
+  <meta property="og:title" content="Podmanager — Native Web GUI for Podman">
+  <meta property="og:description" content="Effortless container and pod management. Rootless, daemon-free, and under 30 MB RAM.">
+  <meta property="og:image" content="dashboard.webp">
+  <meta property="og:type" content="website">
+
+  <style>
+    /* ---------------- Apple Design Tokens ---------------- */
+    :root {
+      --bg: #000000;
+      --bg-surface: #0e0e11;
+      --bg-card: rgba(22, 22, 27, 0.7);
+      --bg-card-hover: rgba(28, 28, 35, 0.85);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(255, 255, 255, 0.16);
+      --text: #f5f5f7;
+      --text-muted: #86868b;
+      --text-subtle: #6e6e73;
+      --accent: #8b5cf6;
+      --accent-gradient: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+      --glow: rgba(168, 85, 247, 0.15);
+      --font-system: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-full: 9999px;
+      --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-system);
+      line-height: 1.5;
+      overflow-x: hidden;
+      selection-background-color: var(--accent);
+    }
+
+    ::selection {
+      background: rgba(168, 85, 247, 0.3);
+      color: #fff;
+    }
+
+    /* ---------------- Navigation ---------------- */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+      padding: 0 1.5rem;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-container {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-brand img {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.75rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 400;
+      transition: var(--transition);
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-github {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .btn-github:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: var(--border-hover);
+    }
+
+    /* ---------------- Hero Section ---------------- */
+    .hero {
+      position: relative;
+      padding: 5rem 1.5rem 3rem;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 380px;
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.18) 0%, rgba(99, 102, 241, 0.08) 45%, transparent 70%);
+      filter: blur(60px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.8125rem;
+      color: #d1d1d6;
+      font-weight: 500;
+      margin-bottom: 1.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .pill-badge .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+    }
+
+    .hero-title {
+      font-size: clamp(2.4rem, 6.5vw, 4.5rem);
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 1.08;
+      margin-bottom: 1.25rem;
+      color: #ffffff;
+    }
+
+    .hero-title-gradient {
+      background: linear-gradient(180deg, #ffffff 40%, rgba(255, 255, 255, 0.65) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.05rem, 2.5vw, 1.35rem);
+      font-weight: 400;
+      color: var(--text-muted);
+      max-width: 680px;
+      margin: 0 auto 2.25rem;
+      letter-spacing: -0.015em;
+      line-height: 1.5;
+    }
+
+    .hero-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 0;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 13px 26px;
+      border-radius: var(--radius-full);
+      background: #ffffff;
+      color: #000000;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: var(--transition);
+      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.12);
+    }
+
+    .btn-primary:hover {
+      background: #f0f0f2;
+      box-shadow: 0 6px 24px rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 13px 24px;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 0.9375rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--border-hover);
+    }
+
+    /* ---------------- App Showcase ---------------- */
+    .showcase {
+      max-width: 1100px;
+      margin: 2.5rem auto 5rem;
+      padding: 0 1.5rem;
+      position: relative;
+    }
+
+    .showcase-frame {
+      position: relative;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: #09090c;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.8), 0 0 100px rgba(168, 85, 247, 0.1);
+    }
+
+    .showcase-header {
+      height: 38px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 8px;
+    }
+
+    .mac-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .mac-dot.close { background: #ff5f56; }
+    .mac-dot.min { background: #ffbd2e; }
+    .mac-dot.max { background: #27c93f; }
+
+    .showcase-frame img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+    }
+
+    /* ---------------- Stats Strip ---------------- */
+    .stats-section {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.015);
+      padding: 3rem 1.5rem;
+    }
+
+    .stats-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      text-align: center;
+    }
+
+    .stat-card .stat-val {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    .stat-card .stat-label {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+    }
+
+    /* ---------------- Features Bento ---------------- */
+    .features {
+      max-width: 1100px;
+      margin: 6rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-eyebrow {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #a855f7;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: #ffffff;
+      margin-bottom: 1rem;
+    }
+
+    .section-subtitle {
+      font-size: 1.125rem;
+      color: var(--text-muted);
+      max-width: 580px;
+      margin: 0 auto;
+    }
+
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .bento-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .bento-card.span-2 {
+      grid-column: span 2;
+    }
+
+    .bento-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .bento-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      margin-bottom: 0.5rem;
+    }
+
+    .bento-desc {
+      font-size: 0.9375rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    /* ---------------- Quick Start Card ---------------- */
+    .quickstart {
+      max-width: 860px;
+      margin: 6rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .terminal-window {
+      background: #09090c;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    }
+
+    .terminal-body {
+      padding: 1.75rem 2rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: #e4e4e7;
+    }
+
+    .terminal-line {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 0.75rem;
+    }
+
+    .terminal-line.comment {
+      color: var(--text-subtle);
+      margin-top: 1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .terminal-prompt {
+      color: #a855f7;
+      user-select: none;
+      font-weight: 600;
+    }
+
+    /* ---------------- Footer ---------------- */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 4rem 1.5rem 3rem;
+      background: #000000;
+    }
+
+    .footer-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 2.5rem;
+    }
+
+    .footer-brand {
+      max-width: 320px;
+    }
+
+    .footer-brand .brand-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 0.75rem;
+    }
+
+    .footer-brand .brand-header img {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+    }
+
+    .footer-brand p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .footer-links-col h4 {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #ffffff;
+      margin-bottom: 1rem;
+    }
+
+    .footer-links-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .footer-links-col a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: var(--transition);
+    }
+
+    .footer-links-col a:hover {
+      color: #ffffff;
+    }
+
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 3rem auto 0;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8125rem;
+      color: var(--text-subtle);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    /* ---------------- Mobile Responsive ---------------- */
+    @media (max-width: 900px) {
+      .bento-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .bento-card.span-2 {
+        grid-column: span 1;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        padding: 3.5rem 1rem 2rem;
+      }
+
+      .hero-cta {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .btn-primary, .btn-secondary {
+        width: 100%;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .footer-container {
+        flex-direction: column;
+        gap: 2rem;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="#" class="nav-brand">
+        <img src="podmanager.webp" alt="Podmanager logo">
+        <span>Podmanager</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#quickstart">Quick Start</a></li>
+        <li><a href="https://github.com/rgdlr/podmanager/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener">Architecture</a></li>
+        <li><a href="https://github.com/rgdlr/podmanager/blob/main/docs/API.md" target="_blank" rel="noopener">API</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <a href="https://github.com/rgdlr/podmanager" target="_blank" rel="noopener" class="btn-github">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          <span>GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+      <div class="pill-badge">
+        <span class="dot"></span>
+        <span>Version 1.0 • Native for Podman</span>
+      </div>
+
+      <h1 class="hero-title hero-title-gradient">
+        Effortless containers.<br>Natively for Podman.
+      </h1>
+
+      <p class="hero-subtitle">
+        A fast, lightweight, and rootless Web GUI. Zero system sockets, zero background daemons, and a memory footprint under 30 MB.
+      </p>
+
+      <div class="hero-cta">
+        <a href="#quickstart" class="btn-primary">Get Started</a>
+        <a href="https://github.com/rgdlr/podmanager" target="_blank" rel="noopener" class="btn-secondary">View on GitHub ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Product Showcase Screenshot -->
+  <section class="showcase">
+    <div class="showcase-frame">
+      <div class="showcase-header">
+        <div class="mac-dot close"></div>
+        <div class="mac-dot min"></div>
+        <div class="mac-dot max"></div>
+      </div>
+      <img src="dashboard.webp" alt="Podmanager Dashboard Interface" loading="lazy">
+    </div>
+  </section>
+
+  <!-- Stats Strip -->
+  <section class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-val">&lt; 30 MB</div>
+        <div class="stat-label">RAM Footprint</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">0</div>
+        <div class="stat-label">System Sockets Required</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">&lt; 100 ms</div>
+        <div class="stat-label">Instant Startup</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">100%</div>
+        <div class="stat-label">Rootless Compatible</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Bento Section -->
+  <section class="features" id="features">
+    <div class="section-header">
+      <div class="section-eyebrow">Architecture & Performance</div>
+      <h2 class="section-title">Engineered with restraint.</h2>
+      <p class="section-subtitle">
+        Everything you need to orchestrate Podman environments without bloated dependencies.
+      </p>
+    </div>
+
+    <div class="bento-grid">
+      <!-- Card 1 -->
+      <div class="bento-card span-2">
+        <div>
+          <div class="bento-icon">🛡️</div>
+          <h3 class="bento-title">Native Rootless & Daemon-Free</h3>
+          <p class="bento-desc">
+            Direct Podman CLI execution using safe child process arrays. No root privileges, no exposed Docker sockets, and no systemd daemon prerequisites.
+          </p>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="bento-card">
+        <div>
+          <div class="bento-icon">☸️</div>
+          <h3 class="bento-title">First-Class Pods</h3>
+          <p class="bento-desc">
+            Manage Kubernetes-style Podman pods out of the box. Inspect co-located containers, shared network namespaces, and batch lifecycle controls.
+          </p>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="bento-card">
+        <div>
+          <div class="bento-icon">⚡</div>
+          <h3 class="bento-title">Live SSE Streaming</h3>
+          <p class="bento-desc">
+            Continuous real-time feeds for container logs, image pull progress, and daemon events over lightweight Server-Sent Events.
+          </p>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="bento-card">
+        <div>
+          <div class="bento-icon">💻</div>
+          <h3 class="bento-title">In-Browser Terminal Exec</h3>
+          <p class="bento-desc">
+            Execute diagnostics commands directly inside any running container without opening a separate terminal or SSH session.
+          </p>
+        </div>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="bento-card">
+        <div>
+          <div class="bento-icon">🚀</div>
+          <h3 class="bento-title">Zero Build Overhead</h3>
+          <p class="bento-desc">
+            Pure modern vanilla web technologies. Zero compilation steps, zero heavy frontend frameworks, instant deployment.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Start Terminal Section -->
+  <section class="quickstart" id="quickstart">
+    <div class="section-header">
+      <div class="section-eyebrow">Quick Start</div>
+      <h2 class="section-title">Up and running in 30 seconds.</h2>
+      <p class="section-subtitle">
+        Requires Node.js 24+ and Podman installed.
+      </p>
+    </div>
+
+    <div class="terminal-window">
+      <div class="showcase-header">
+        <div class="mac-dot close"></div>
+        <div class="mac-dot min"></div>
+        <div class="mac-dot max"></div>
+      </div>
+      <div class="terminal-body">
+        <div class="terminal-line comment"># 1. Clone the repository</div>
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <span>git clone https://github.com/rgdlr/podmanager.git</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <span>cd podmanager</span>
+        </div>
+
+        <div class="terminal-line comment"># 2. Install dependencies & start</div>
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <span>npm install</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <span>npm start</span>
+        </div>
+
+        <div class="terminal-line comment"># 3. Open in your browser at http://localhost:3030</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div class="brand-header">
+          <img src="podmanager.webp" alt="Podmanager logo">
+          <span>Podmanager</span>
+        </div>
+        <p>The lightweight, native, and modern Web GUI for Podman environments.</p>
+      </div>
+
+      <div class="footer-links-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#quickstart">Quick Start</a></li>
+          <li><a href="https://github.com/rgdlr/podmanager" target="_blank" rel="noopener">GitHub Repository</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links-col">
+        <h4>Technical Docs</h4>
+        <ul>
+          <li><a href="https://github.com/rgdlr/podmanager/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener">Architecture & Security</a></li>
+          <li><a href="https://github.com/rgdlr/podmanager/blob/main/docs/API.md" target="_blank" rel="noopener">API Reference</a></li>
+          <li><a href="https://github.com/rgdlr/podmanager/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contributing Guide</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links-col">
+        <h4>License</h4>
+        <ul>
+          <li><a href="https://github.com/rgdlr/podmanager/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a></li>
+          <li><a href="https://podman.io" target="_blank" rel="noopener">Podman Official</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>© 2026 Podmanager. Released under the MIT License.</div>
+      <div>Designed with precision for the Podman ecosystem.</div>
+    </div>
+  </footer>
+</body>
+</html>

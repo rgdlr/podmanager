@@ -1,0 +1,9 @@
+{
+  "name": "@podmanager/landing",
+  "version": "1.0.0",
+  "description": "Podmanager product landing page",
+  "license": "MIT",
+  "scripts": {
+    "start": "node preview.js"
+  }
+}

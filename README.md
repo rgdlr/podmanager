@@ -12,7 +12,7 @@ The lightweight, native, and modern web app for podman environments.
 [![Footprint](https://img.shields.io/badge/Footprint-%3C30MB%20RAM-00b894)](#-why-podmanager)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-![Podmanager Dashboard](docs/dashboard.webp)
+![Podmanager Dashboard](apps/landing/public/dashboard.webp)
 
 ## 📖 Overview
 
